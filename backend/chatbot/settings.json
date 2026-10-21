@@ -1,0 +1,9 @@
+{
+    "chat_terminators": ["quit", "q", "esc", "stop"],
+    "max_answer_length": 128,
+    "max_input_length": 1024, 
+    "max_instructions_length": 128,
+    "max_memory": 3,
+    "max_title_length": 64,
+    "session_id": -1
+}

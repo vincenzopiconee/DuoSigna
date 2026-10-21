@@ -1,0 +1,41 @@
+ASL Knowledge Base: Frequently Asked Questions
+1. What is American Sign Language (ASL)?
+American Sign Language (ASL) is a complete, natural, visual-gestural language used primarily by the Deaf community in the United States and most of Anglophone Canada. It is not pantomime, nor is it a visual translation of spoken English. ASL has its own independent vocabulary, complex grammar, and syntax.
+
+2. Is sign language universal?
+No, sign language is not universal. Just as spoken languages evolved independently across the globe, so did sign languages. Every country generally has its own sign language (e.g., LIS in Italy, LSF in France, DGS in Germany). There is a system called International Sign (IS), but it is a simplified pidgin used primarily at international events, not a natural native language.
+
+3. How many signs exist in ASL?
+There is no exact or finite number of signs in ASL, just as there is no maximum limit to words in a spoken language. While standard ASL dictionaries may catalog over 10,000 distinct signs, the vocabulary is theoretically infinite. ASL constantly evolves, utilizing classifiers and spatial reasoning to describe new technologies, concepts, and cultural shifts.
+
+4. What are the differences between ASL and British Sign Language (BSL)?
+Despite both countries sharing English as a spoken language, ASL and BSL are completely different and mutually unintelligible. They belong to different linguistic families. ASL is heavily influenced by French Sign Language (LSF), while BSL belongs to the BANZSL (British, Australian, and New Zealand Sign Language) family. Visually, a major difference is the manual alphabet: ASL uses a one-handed alphabet, whereas BSL uses a two-handed alphabet.
+
+5. What are the historical origins of ASL?
+ASL originated in the early 19th century from a blend of local American sign languages—most notably Martha's Vineyard Sign Language, originating from an island with a high population of hereditary deafness—and French Sign Language (LSF). This merger happened when Thomas Hopkins Gallaudet, an American hearing educator, and Laurent Clerc, a Deaf French teacher, co-founded the first school for the deaf in Hartford, Connecticut, in 1817. About 60% of modern ASL vocabulary is directly related to LSF.
+
+6. How does ASL grammar differ from English grammar?
+ASL does not follow the standard Subject-Verb-Object (SVO) word order of English. Instead, it frequently utilizes a Topic-Comment sentence structure. In ASL, the signer first establishes the topic of the sentence (the subject or object being discussed) and then provides a comment or action related to that topic. It also heavily relies on spatial grammar, setting up subjects and objects in the physical space around the signer.
+
+7. What is the role of facial expressions in ASL?
+In ASL, facial expressions are not merely emotional; they are strictly grammatical. These are known as Non-Manual Markers (NMMs). For example:
+
+To ask a "yes/no" question, the eyebrows must be raised, and the head slightly tilted forward.
+
+To ask a "wh-question" (who, what, where, when, why), the eyebrows must be furrowed.
+Performing a sign with the incorrect facial expression is a grammatical error equivalent to using the wrong verb tense in English.
+
+8. What is fingerspelling and when is it used?
+Fingerspelling is the use of the manual alphabet to spell out words letter by letter. In ASL, fingerspelling is typically used for proper nouns (names of people, cities, brands) or for specific English words that do not have a dedicated ASL sign. It is seamlessly integrated into the flow of signing.
+
+9. How is time indicated in ASL?
+ASL handles time chronologically and spatially. Sentences generally follow a Time-Topic-Comment structure, meaning the time indicator (yesterday, tomorrow, next week) is usually placed at the very beginning of the sentence to establish the tense. Spatially, ASL uses an imaginary "timeline" related to the body: signs for the past move backward (behind the body), present signs stay close to the body, and future signs move forward.
+
+10. What are classifiers in ASL?
+Classifiers are specific handshapes used to represent classes of objects, their size, shape, or movement. Once a noun is identified, a classifier can be used to show how that object moves or relates to other objects. For example, a flat hand can represent a vehicle, and moving that hand can vividly describe a car driving up a hill or crashing into a wall.
+
+11. Who uses American Sign Language?
+ASL is the primary language of an estimated 250,000 to 500,000 Deaf and hard-of-hearing individuals in the US and Canada. It is also used by hearing individuals, including CODAs (Children of Deaf Adults), sign language interpreters, educators, and relatives of Deaf individuals.
+
+12. Does ASL have regional accents or dialects?
+Yes, just like spoken languages, ASL has regional variations, accents, and dialects. A signer from New York might use a different sign for "birthday" or "pizza" than a signer from Texas. There is also Black American Sign Language (BASL), a distinct dialect that developed historically in segregated schools for Deaf Black students, known for its unique vocabulary and larger signing space.
