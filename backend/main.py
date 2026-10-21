@@ -112,6 +112,59 @@ app.mount("/gif_output", StaticFiles(directory=os.path.join(BASE_DIR, "gif_outpu
 from chatbot.llm_client import get_llm_client
 client = get_llm_client()
 
+# Endpoint diagnostico per testare la connessione a Groq direttamente dal browser
+@app.get("/api/test-llm")
+def test_llm():
+    import requests
+    groq_key = os.getenv("GROQ_API_KEY", "")
+    if not groq_key:
+        return {
+            "status": "error",
+            "message": "GROQ_API_KEY is not defined in Cloud Run environment variables!"
+        }
+    
+    masked_key = groq_key[:6] + "..." + groq_key[-4:] if len(groq_key) > 10 else "too_short"
+    headers = {
+        "Authorization": f"Bearer {groq_key.strip()}",
+        "Content-Type": "application/json"
+    }
+
+    # 1. Fetch available models directly from Groq
+    live_models = []
+    try:
+        m_resp = requests.get("https://api.groq.com/openai/v1/models", headers=headers, timeout=10)
+        if m_resp.status_code == 200:
+            live_models = [m.get("id") for m in m_resp.json().get("data", [])]
+    except Exception as e:
+        live_models = [f"Error listing models: {e}"]
+    
+    # 2. Test chat completion with the active model
+    active_model = client.discovered_model if hasattr(client, 'discovered_model') and client.discovered_model else "llama-3.1-8b-instant"
+    test_result = {}
+    try:
+        resp = requests.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers=headers,
+            json={"model": active_model, "messages": [{"role": "user", "content": "Respond only with: GROQ_ACTIVE_AND_WORKING"}]},
+            timeout=15
+        )
+        test_result = {
+            "model_tested": active_model,
+            "status_code": resp.status_code,
+            "response": resp.json() if resp.status_code == 200 else resp.text
+        }
+    except Exception as e:
+        test_result = {"error": str(e)}
+
+    return {
+        "groq_key_detected": masked_key,
+        "selected_active_model": active_model,
+        "live_models_available_for_key": live_models,
+        "test_call": test_result
+    }
+
+
+
 
 
 
