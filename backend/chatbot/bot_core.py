@@ -9,7 +9,6 @@ import io
 from yt_dlp import YoutubeDL
 
 # Vocal requirements
-from kokoro import KPipeline
 import soundfile as sf
 
 # Helper files
@@ -18,8 +17,8 @@ from . import config
 
 
 
-# MUST BE THE SAME of build_embeddings.py
-model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
+# Reusing the model from NLP_tools to avoid loading duplicate weights and save ~450MB RAM
+model = NLP.model
 LLM_MODEL = "llama3.2"
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -27,8 +26,16 @@ CHUNK_PATH = os.path.join(CURRENT_DIR, "chunks_mapping.json")
 
 SETTINGS = config.read_settings(CURRENT_DIR, 'settings.json')
 
-# Initialize pipeline for Kokoro ('a' stands for american)
-pipeline = KPipeline(lang_code='a', repo_id='hexgrad/Kokoro-82M')
+# Lazy-loaded Kokoro pipeline (loads into RAM on-demand to save ~350MB at startup)
+_kokoro_pipeline = None
+
+def get_kokoro_pipeline():
+    global _kokoro_pipeline
+    if _kokoro_pipeline is None:
+        print("[Kokoro] Loading Kokoro TTS pipeline...")
+        from kokoro import KPipeline
+        _kokoro_pipeline = KPipeline(lang_code='a', repo_id='hexgrad/Kokoro-82M')
+    return _kokoro_pipeline
 
 AUDIO_FILE = os.path.join(CURRENT_DIR, "audio_instructions.wav")
 
@@ -334,6 +341,7 @@ def generate_yt_link(target_word):
 # --- Function to generate audio trace ---
 def generate_audio_trace(instructions):
     # Generate the audio: af_heart --> female voice, am_fenrir --> male voice
+    pipeline = get_kokoro_pipeline()
     generator = pipeline(
         instructions,
         voice='af_heart',
@@ -360,6 +368,7 @@ def generate_audio_trace(instructions):
 #streaming audio
 def generate_audio_stream(text):
     """ Script that generates audio and returns it as a stream of bytes in memory """
+    pipeline = get_kokoro_pipeline()
     generator = pipeline(
         text,
         voice='af_heart',

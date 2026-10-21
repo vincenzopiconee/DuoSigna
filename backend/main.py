@@ -1,13 +1,10 @@
 import os
 import warnings
 
-# 1. Nasconde il saluto fastidioso di Pygame ("Hello from the pygame community")
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
-
-# 2. Nasconde le barre di caricamento di Kokoro/HuggingFace (opzionale ma consigliato)
+# 1. Nasconde le barre di caricamento di Kokoro/HuggingFace (opzionale ma consigliato)
 os.environ['HF_HUB_DISABLE_PROGRESS_BARS'] = "1"
 
-# 3. Silenzia gli avvisi di PyTorch e Scikit-Learn
+# 2. Silenzia gli avvisi di PyTorch e Scikit-Learn
 warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
 
@@ -29,12 +26,10 @@ from chatbot import bot_core as bot
 from chatbot import vision_core_l1
 import traceback
 import tensorflow as tf
-import pygame 
 
 from chatbot import vision_core
 import json
 import numpy as np
-from ollama import Client
 from fastapi.staticfiles import StaticFiles
 
 from fastapi.responses import StreamingResponse
@@ -67,10 +62,18 @@ LABELS = vision_core.load_labels(SIGN_MAP_PATH)
 infer_sign = vision_core.load_savedmodel(ZIP_PATH, EXTRACT_DIR)
 
 
-# Crea le tabelle nel database all'avvio
-models.Base.metadata.create_all(bind=engine)
+# Crea le tabelle nel database all'avvio in modo sicuro
+try:
+    models.Base.metadata.create_all(bind=engine)
+    print("[Database] Tables verified/created successfully.")
+except Exception as e:
+    print(f"[Database] Startup warning: Database check failed: {e}")
 
-app = FastAPI()
+app = FastAPI(title="DuoSigna API")
+
+@app.get("/")
+def root():
+    return {"status": "ok", "message": "DuoSigna API is running"}
 
 # Configurazione CORS per accettare richieste da qualsiasi dominio (locale o in cloud)
 app.add_middleware(
