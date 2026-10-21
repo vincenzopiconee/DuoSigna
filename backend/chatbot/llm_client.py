@@ -4,7 +4,7 @@ import requests
 class UnifiedLLMClient:
     """
     Unified LLM Client:
-    - If GROQ_API_KEY is defined in environment variables, uses the free Groq Cloud API (Llama 3.3 70B / 3.2 3B).
+    - If GROQ_API_KEY is defined in environment variables, uses the free Groq Cloud API.
     - Otherwise, falls back to the local Ollama instance (e.g. http://127.0.0.1:11434).
     """
     def __init__(self, ollama_host=None):
@@ -14,7 +14,7 @@ class UnifiedLLMClient:
         if self.groq_api_key:
             self.mode = "groq"
             self.groq_model = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
-            print(f"[LLM] Active mode: GROQ Cloud API (model: {self.groq_model})")
+            print(f"[LLM] Active mode: GROQ Cloud API (preferred model: {self.groq_model})")
         else:
             self.mode = "ollama"
             try:
@@ -30,25 +30,50 @@ class UnifiedLLMClient:
             messages = []
 
         if self.mode == "groq":
-            target_model = self.groq_model
             url = "https://api.groq.com/openai/v1/chat/completions"
             headers = {
                 "Authorization": f"Bearer {self.groq_api_key.strip()}",
                 "Content-Type": "application/json"
             }
-            payload = {
-                "model": target_model,
-                "messages": messages,
-                "temperature": kwargs.get("temperature", 0.3)
-            }
-            response = requests.post(url, headers=headers, json=payload, timeout=45)
-            response.raise_for_status()
-            data = response.json()
-            content = data["choices"][0]["message"]["content"]
+            # Candidate models to try in order of capability
+            candidates = [self.groq_model, "llama-3.1-8b-instant", "llama-3.2-3b-preview"]
+            # Deduplicate while preserving order
+            models_to_try = []
+            for m in candidates:
+                if m not in models_to_try:
+                    models_to_try.append(m)
+
+            last_error = None
+            for candidate in models_to_try:
+                try:
+                    payload = {
+                        "model": candidate,
+                        "messages": messages,
+                        "temperature": kwargs.get("temperature", 0.3)
+                    }
+                    response = requests.post(url, headers=headers, json=payload, timeout=25)
+                    if response.status_code == 200:
+                        data = response.json()
+                        content = data["choices"][0]["message"]["content"]
+                        return {
+                            "message": {
+                                "role": "assistant",
+                                "content": content
+                            }
+                        }
+                    else:
+                        print(f"[LLM] Groq model '{candidate}' returned {response.status_code}: {response.text}")
+                        last_error = f"{response.status_code} - {response.text}"
+                except Exception as ex:
+                    print(f"[LLM] Groq request error with '{candidate}': {ex}")
+                    last_error = str(ex)
+
+            # If all Groq models failed, return graceful response instead of crashing with 500
+            print(f"[LLM] All Groq candidates failed. Last error: {last_error}")
             return {
                 "message": {
                     "role": "assistant",
-                    "content": content
+                    "content": "I apologize, but I am having temporary trouble reaching the language model right now. Please try your question again in a moment!"
                 }
             }
         else:

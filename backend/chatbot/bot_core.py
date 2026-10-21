@@ -316,25 +316,25 @@ def refine_prompt(purpose, target_word, chat_history, clean_input, model):
 # --- Function to generate a link for a target word ---
 def generate_yt_link(target_word):
     """ Function to create a link to a youtube video explaining how to perform a target sign """
+    try:
+        query = f"how can I perform {target_word} in ASL language"
+        ydl_opts = {
+            "quiet": True,
+            "extract_flat": True,
+            "skip_download": True,
+            "socket_timeout": 5
+        }
+        with YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(f"ytsearch1:{query}", download=False)
+            if info and "entries" in info and len(info["entries"]) > 0:
+                video = info["entries"][0]
+                if video and "id" in video and video["id"]:
+                    return f"https://www.youtube.com/watch?v={video['id']}"
+    except Exception as e:
+        print(f"[YouTube] Search error for '{target_word}': {e}")
 
-    # Create query for the target word
-    query = "how can I perform " + target_word + "in ASL language"
-
-    ydl_opts = {
-        "quiet": True,
-        "extract_flat": True
-    }
-
-    with YoutubeDL(ydl_opts) as ydl:
-        info = ydl.extract_info(f"ytsearch1:{query}", download=False)
-
-    video = info["entries"][0]
-
-    # Generate url for the first result
-    video_url = f"https://www.youtube.com/watch?v={video['id']}"
-
-    # Return url
-    return video_url
+    # Fallback to direct search query if yt-dlp fails or is blocked on datacenter IPs
+    return f"https://www.youtube.com/results?search_query=how+to+sign+{target_word}+in+ASL"
 
 #__________________________________________________________________________________
 

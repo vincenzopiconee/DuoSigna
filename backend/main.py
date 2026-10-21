@@ -8,7 +8,8 @@ os.environ['HF_HUB_DISABLE_PROGRESS_BARS'] = "1"
 warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
 
-from fastapi import FastAPI, Depends, HTTPException, Header
+from fastapi import FastAPI, Depends, HTTPException, Header, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import models
@@ -83,6 +84,23 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Gestione globale degli errori con header CORS inclusi
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    import traceback
+    traceback.print_exc()
+    origin = request.headers.get("origin", "*")
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Server error: {str(exc)}"},
+        headers={
+            "Access-Control-Allow-Origin": origin,
+            "Access-Control-Allow-Credentials": "true",
+            "Access-Control-Allow-Methods": "*",
+            "Access-Control-Allow-Headers": "*",
+        }
+    )
 
 # Sostituisci BASE_DIR se gif_output si trova da un'altra parte, 
 # ma se è nella root del backend questo andrà bene:
@@ -245,34 +263,41 @@ async def chat_with_bot(
     if not user:
         raise HTTPException(status_code=401, detail="Not authorized")
 
-    # 2. Logica: è una nuova chat o una continuazione?
-    if request.chat_id is None:
-        # Crea una nuova sessione nel DB per questo utente
-        new_session = models.ChatSession(user_id=user.id)
-        db.add(new_session)
-        db.commit()
-        db.refresh(new_session)
-        chat_id = new_session.id
+    try:
+        # 2. Logica: è una nuova chat o una continuazione?
+        if request.chat_id is None:
+            # Crea una nuova sessione nel DB per questo utente
+            new_session = models.ChatSession(user_id=user.id)
+            db.add(new_session)
+            db.commit()
+            db.refresh(new_session)
+            chat_id = new_session.id
+            
+            # Chiama il bot per una nuova chat
+            risposta_bot = bot.chat(client, request.question, db, user.id, chat_id, is_new_chat=True)
         
-        # Chiama il bot per una nuova chat
-        risposta_bot = bot.chat(client, request.question, db, user.id, chat_id, is_new_chat=True)
-    
-    else:
-        chat_id = request.chat_id
-        risposta_bot = bot.chat(client, request.question, db, user.id, chat_id, is_new_chat=False)
-        
-        # Recupera il vecchio titolo dalla chat id, controllando che esista e sia associata a quell'user 
-        chat_session = db.query(models.ChatSession).filter(
-            models.ChatSession.id == chat_id,
-            models.ChatSession.user_id == user.id
-        ).first()
+        else:
+            chat_id = request.chat_id
+            risposta_bot = bot.chat(client, request.question, db, user.id, chat_id, is_new_chat=False)
+            
+            # Recupera il vecchio titolo dalla chat id, controllando che esista e sia associata a quell'user 
+            chat_session = db.query(models.ChatSession).filter(
+                models.ChatSession.id == chat_id,
+                models.ChatSession.user_id == user.id
+            ).first()
 
-        if not chat_session:
-            raise HTTPException(status_code=404, detail="Chat not found or not authorized")
-        
-        risposta_bot["title"] = chat_session.title
+            if not chat_session:
+                raise HTTPException(status_code=404, detail="Chat not found or not authorized")
+            
+            risposta_bot["title"] = chat_session.title
 
-    return risposta_bot
+        return risposta_bot
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error in chatbot: {str(e)}")
 
 class SignRecognitionRequest(BaseModel):
     # Ci aspettiamo una lista di frame. Ogni frame è una matrice 543x3.
