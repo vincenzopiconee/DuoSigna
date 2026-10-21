@@ -41,7 +41,7 @@ const selectAvatar = async (url) => {
   currentAvatar.value = url
   isAvatarModalOpen.value = false
   try {
-    await $fetch('http://127.0.0.1:8000/update-avatar', {
+    await $fetch(useApiUrl('/update-avatar'), {
       method: 'PUT',
       headers: { 'Authorization': token.value },
       body: { avatar_url: url }
@@ -75,7 +75,7 @@ const handleSaveProfile = async () => {
 
   try {
     // 2. Chiamata PUT al backend
-    await $fetch('http://127.0.0.1:8000/update-profile', {
+    await $fetch(useApiUrl('/update-profile'), {
       method: 'PUT',
       headers: { 'Authorization': token.value },
       body: {
@@ -119,7 +119,7 @@ const handleSavePassword = async () => {
 
   try {
     // Chiamata vera al backend
-    await $fetch('http://127.0.0.1:8000/update-password', {
+    await $fetch(useApiUrl('/update-password'), {
       method: 'PUT',
       headers: { 'Authorization': token.value },
       body: {
@@ -149,7 +149,7 @@ const handleDeleteAccount = async () => {
   
   try {
     // 1. Diciamo al backend di eliminare tutto dal database
-    await $fetch('http://127.0.0.1:8000/delete-account', {
+    await $fetch(useApiUrl('/delete-account'), {
       method: 'DELETE',
       headers: { 'Authorization': token.value }
     })

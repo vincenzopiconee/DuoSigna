@@ -252,7 +252,7 @@ const searchQuery = ref('')
 
 const imageLoadError = ref(false)
 
-const backendUrl = 'http://localhost:8000' 
+const backendUrl = useApiUrl() 
 const { token } = useAuth()
 const pendingLearningSign = useState('pending-learning-sign', () => null)
 

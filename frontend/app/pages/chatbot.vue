@@ -20,7 +20,7 @@ const chatToDelete = ref(null)
 
 const fetchChatHistoryList = async () => {
   try {
-    const response = await $fetch('http://127.0.0.1:8000/chats', {
+    const response = await $fetch(useApiUrl('/chats'), {
       headers: { 'Authorization': token.value }
     })
     chatList.value = response 
@@ -39,7 +39,7 @@ const loadChat = async (selectedChatId) => {
   isLoading.value = true
   
   try {
-    const response = await $fetch(`http://127.0.0.1:8000/chat/${selectedChatId}`, {
+    const response = await $fetch(useApiUrl(`/chat/${selectedChatId}`), {
       headers: { 'Authorization': token.value }
     })
     messages.value = response.messages
@@ -76,7 +76,7 @@ const confirmDeleteChat = async () => {
 
   try {
     // Chiamata DELETE al backend
-    await $fetch(`http://127.0.0.1:8000/chat/${idToDelete}`, {
+    await $fetch(useApiUrl(`/chat/${idToDelete}`), {
       method: 'DELETE',
       headers: { 'Authorization': token.value }
     })
@@ -116,7 +116,7 @@ const sendMessage = async (messageText = null) => {
   isLoading.value = true
 
   try {
-    const response = await $fetch('http://127.0.0.1:8000/chat', {
+    const response = await $fetch(useApiUrl('/chat'), {
       method: 'POST',
       headers: { 'Authorization': token.value },
       body: { question: userText, chat_id: chatId.value }
@@ -184,8 +184,7 @@ const getYouTubeEmbedUrl = (url) => {
 const getMediaUrl = (url) => {
   if (!url) return ''
   if (url.startsWith('http')) return url
-  if (url.startsWith('/')) return `http://127.0.0.1:8000${url}`
-  return `http://127.0.0.1:8000/${url}`
+  return useApiUrl(url)
 }
 
 // ==============================================
@@ -427,8 +426,8 @@ const submitSign = async (returnToIdle = true) => {
 
   const isLevel1 = currentLevel.value === 'level_1'
   const targetUrl = isLevel1 
-    ? 'http://127.0.0.1:8000/recognize-letter' 
-    : 'http://127.0.0.1:8000/recognize-sign'
+    ? useApiUrl('/recognize-letter') 
+    : useApiUrl('/recognize-sign')
 
   try {
     const response = await $fetch(targetUrl, {
@@ -536,7 +535,7 @@ const toggleAudio = async (text, index) => {
   isAudioLoading.value = true
 
   try {
-    const response = await $fetch('http://127.0.0.1:8000/synthesize-audio', {
+    const response = await $fetch(useApiUrl('/synthesize-audio'), {
       method: 'POST',
       headers: { 'Authorization': token.value },
       body: { text: text },

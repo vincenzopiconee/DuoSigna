@@ -101,7 +101,7 @@ const handleSubmit = async (event) => {
       
     } else {
       // 2. GESTIONE REGISTRAZIONE E LOGIN AUTOMATICO
-      await $fetch('http://127.0.0.1:8000/register', {
+      await $fetch(useApiUrl('/register'), {
         method: 'POST',
         body: {
           nome: formData.name, 

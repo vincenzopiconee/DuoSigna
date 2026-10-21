@@ -72,10 +72,10 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# Configurazione CORS per accettare richieste dai tunnel pubblici
+# Configurazione CORS per accettare richieste da qualsiasi dominio (locale o in cloud)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Permette l'accesso a qualsiasi frontend (incluso il tunnel di VS Code)
+    allow_origin_regex=".*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -87,27 +87,15 @@ app.mount("/gif_output", StaticFiles(directory=os.path.join(BASE_DIR, "gif_outpu
 
 
 
-# 1. Configurazione Client Ollama
-# Usa l'IP del computer che fa girare Llama (o 'http://localhost:11434')
-client = Client(host='http://127.0.0.1:11434')
+# 1. Configurazione Client LLM (Groq per il Cloud 24/7 o Ollama per lo sviluppo locale)
+from chatbot.llm_client import get_llm_client
+client = get_llm_client()
 
 
 
 
 
-# --- CONFIGURAZIONE CORS ---
-# Diciamo al backend di accettare le chiamate provenienti dal tuo Frontend Nuxt
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",   # Il tuo frontend Nuxt
-        "http://127.0.0.1:3000",   # Frontend Nuxt tramite IP
-        "http://localhost:8000",   # Swagger docs (localhost)
-        "http://127.0.0.1:8000",   # Swagger docs (IP)
-    ],    allow_credentials=True,
-    allow_methods=["*"], # Permette POST, GET, OPTIONS, ecc.
-    allow_headers=["*"], # Permette l'invio dei Token e altri header
-)
+
 
 # Schemi Pydantic (uguali a prima)
 class UserCreate(BaseModel):

@@ -226,8 +226,8 @@ const submitSign = async () => {
   signFrames.value = []
 
   const targetUrl = currentQuestion.value.level === 'level_1'
-    ? 'http://127.0.0.1:8000/recognize-letter' 
-    : 'http://127.0.0.1:8000/recognize-sign'
+    ? useApiUrl('/recognize-letter') 
+    : useApiUrl('/recognize-sign')
 
   try {
     const response = await $fetch(targetUrl, {
@@ -296,7 +296,7 @@ const startQuiz = async () => {
   try {
     const categoriesParam = selectedCategories.value.map(category => encodeURIComponent(category)).join(',')
     // Chiamata corretta all'endpoint '/api/quiz/start' per evitare il 404
-    const response = await $fetch(`http://localhost:8000/api/quiz/start?categories=${categoriesParam}`, {
+    const response = await $fetch(useApiUrl(`/api/quiz/start?categories=${categoriesParam}`), {
       method: 'GET',
       headers: { 'Authorization': token.value }
     })
@@ -348,7 +348,7 @@ const startQuiz = async () => {
 
 const sendFinalScore = async () => {
   try {
-    await $fetch('http://localhost:8000/api/quiz/submit', {
+    await $fetch(useApiUrl('/api/quiz/submit'), {
       method: 'POST',
       headers: { 'Authorization': token.value, 'Content-Type': 'application/json' },
       body: { score: score.value }
@@ -612,7 +612,7 @@ onBeforeUnmount(() => {
                   >
                     <div class="relative py-4 flex items-center justify-center min-h-[200px] md:min-h-[240px] bg-white dark:bg-gray-900 rounded-lg p-2 shadow-inner">
                       <img 
-                        :src="`http://localhost:8000/gif_output/${option.content.toLowerCase()}.gif`" 
+                        :src="useApiUrl(`/gif_output/${option.content.toLowerCase()}.gif`)" 
                         alt="Sign Option" 
                         class="h-44 md:h-48 w-full object-contain mx-auto transition-transform hover:scale-105"
                       />

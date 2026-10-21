@@ -14,7 +14,7 @@ export const useOnboarding = () => {
   const markTourAsCompleted = async () => {
     try {
       // 1. Diciamo al backend che il tour è finito
-      await $fetch('http://127.0.0.1:8000/complete-onboarding', {
+      await $fetch(useApiUrl('/complete-onboarding'), {
         method: 'POST',
         headers: { 'Authorization': token.value }
       })
@@ -203,7 +203,7 @@ export const useOnboarding = () => {
               <div class="flex flex-col items-center justify-center text-center">
                 <p class="text-base text-gray-600 dark:text-gray-300 mb-5">You are all set! We are so <b>HAPPY</b> to have you here.</p>
                 <div class="w-full bg-gray-50 dark:bg-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-800 shadow-inner mb-6 flex justify-center">
-                  <img src="http://127.0.0.1:8000/gif_output/rickroll.gif" alt="Happy Sign" class="h-48 object-contain rounded-lg" />
+                  <img src="${useApiUrl('/gif_output/rickroll.gif')}" alt="Happy Sign" class="h-48 object-contain rounded-lg" />
                 </div>
                 <p class="text-xl font-bold text-gray-800 dark:text-white uppercase tracking-widest">Happy Learning!</p>
               </div>
