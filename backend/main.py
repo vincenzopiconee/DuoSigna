@@ -102,9 +102,22 @@ async def global_exception_handler(request: Request, exc: Exception):
         }
     )
 
-# Sostituisci BASE_DIR se gif_output si trova da un'altra parte, 
-# ma se è nella root del backend questo andrà bene:
-app.mount("/gif_output", StaticFiles(directory=os.path.join(BASE_DIR, "gif_output")), name="gif_output")
+# Static files mount with case-insensitive fallback (for Linux compatibility, e.g. TV.gif vs tv.gif)
+class CaseInsensitiveStaticFiles(StaticFiles):
+    async def get_response(self, path: str, scope):
+        response = await super().get_response(path, scope)
+        if response.status_code == 404:
+            target = path.lower()
+            try:
+                base_dir = self.all_directories[0] if hasattr(self, 'all_directories') and self.all_directories else self.directory
+                for entry in os.listdir(base_dir):
+                    if entry.lower() == target:
+                        return await super().get_response(entry, scope)
+            except Exception:
+                pass
+        return response
+
+app.mount("/gif_output", CaseInsensitiveStaticFiles(directory=os.path.join(BASE_DIR, "gif_output")), name="gif_output")
 
 
 

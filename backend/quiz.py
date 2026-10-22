@@ -168,7 +168,7 @@ def generate_user_quiz(db: Session, user_id: int, categories: str, nn_dictionary
         options = distractors + [correct_word]
         random.shuffle(options)
         
-        media_url = f"http://localhost:8000/gif_output/{correct_word.lower()}.gif"
+        media_url = f"/gif_output/{correct_word.lower()}.gif"
         
         # Bilanciamento tipologie di gioco: 20% fotocamera, 40% sign-word, 40% word-sign
         rand = random.random()

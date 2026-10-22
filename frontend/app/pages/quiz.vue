@@ -359,6 +359,28 @@ const sendFinalScore = async () => {
   }
 }
 
+const mediaLoadFailed = ref(false)
+
+const isMediaUrl = (media) => {
+  if (!media || typeof media !== 'string') return false
+  if (media.startsWith('i-')) return false
+  return (
+    media.startsWith('http://') ||
+    media.startsWith('https://') ||
+    media.startsWith('/') ||
+    media.includes('.gif') ||
+    media.includes('.png') ||
+    media.includes('.jpg') ||
+    media.includes('.webp') ||
+    media.includes('gif_output')
+  )
+}
+
+const getMediaUrl = (url) => {
+  if (!url) return ''
+  return useApiUrl(url)
+}
+
 const resetQuestionState = () => {
   clearFeedbackTimeout()
   attemptsLeft.value = 5
@@ -366,6 +388,7 @@ const resetQuestionState = () => {
   feedbackType.value = ''
   feedbackHints.value = []
   showHint.value = false
+  mediaLoadFailed.value = false
   stopCamera()
 }
 
@@ -613,7 +636,7 @@ onBeforeUnmount(() => {
                   >
                     <div class="relative py-4 flex items-center justify-center min-h-[200px] md:min-h-[240px] bg-white dark:bg-gray-900 rounded-lg p-2 shadow-inner">
                       <img 
-                        :src="useApiUrl(`/gif_output/${option.content.toLowerCase()}.gif`)" 
+                        :src="getMediaUrl(`/gif_output/${option.content.toLowerCase()}.gif`)" 
                         alt="Sign Option" 
                         class="h-44 md:h-48 w-full object-contain mx-auto transition-transform hover:scale-105"
                       />
@@ -641,11 +664,16 @@ onBeforeUnmount(() => {
                 
                 <UCard class="w-full max-w-2xl aspect-video flex items-center justify-center bg-gray-100 dark:bg-gray-900 relative rounded-2xl border-2 border-gray-200 dark:border-gray-800 overflow-hidden shadow-md">
                   <img 
-                    v-if="currentQuestion.targetMedia.startsWith('http')" 
-                    :src="currentQuestion.targetMedia" 
+                    v-if="isMediaUrl(currentQuestion.targetMedia) && !mediaLoadFailed" 
+                    :src="getMediaUrl(currentQuestion.targetMedia)" 
                     alt="Sign Animation"
                     class="w-full h-full object-contain"
+                    @error="mediaLoadFailed = true"
                   />
+                  <div v-else-if="mediaLoadFailed" class="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 gap-2">
+                    <UIcon name="i-lucide-hand" class="w-24 h-24 text-primary-500" />
+                    <span class="text-sm font-semibold">Sign animation preview</span>
+                  </div>
                   <UIcon 
                     v-else 
                     :name="currentQuestion.targetMedia" 
@@ -793,7 +821,7 @@ onBeforeUnmount(() => {
                   </p>
                   <div class="w-full max-w-xl aspect-video rounded-2xl overflow-hidden border-2 border-amber-300 dark:border-amber-700 bg-gray-100 dark:bg-gray-950 p-3 flex items-center justify-center shadow-lg transition-all duration-300">
                     <img 
-                      :src="currentQuestion.targetMedia" 
+                      :src="getMediaUrl(currentQuestion.targetMedia)" 
                       alt="ASL Hint Animation" 
                       class="w-full h-full object-contain rounded-xl shadow-inner" 
                     />
