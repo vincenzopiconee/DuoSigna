@@ -311,7 +311,7 @@ The backend exposes fully documented REST endpoints compliant with OpenAPI / Swa
 * [Vincenzo Picone](https://github.com/vincenzopiconee) — *Lead Developer, Cloud Architecture, Groq LLM & Web Speech Integration, CI/CD & Deployment*
 
 ### Academic Origins (Politecnico di Milano)
-DuoSigna originally started as a collaborative academic project for the **Multimodal Interaction Technology and Applications (MITA)** course at **Politecnico di Milano (PoliMi)**, developed in collaboration with:
+DuoSigna originally started as a collaborative academic project for the **Multimodal Interactive Technologies and Applications (MITA)** course at **Politecnico di Milano (PoliMi)**, developed in collaboration with:
 
 * [Andrea Arzilli](https://github.com/AndreaArzilli)
 * [Camilla Bocciolone](https://github.com/camillabocciolone)
