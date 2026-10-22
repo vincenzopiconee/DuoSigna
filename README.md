@@ -6,6 +6,7 @@
 [![Database](https://img.shields.io/badge/Database-Neon%20PostgreSQL-00E599?style=for-the-badge&logo=postgresql)](https://neon.tech)
 [![AI LLM Engine](https://img.shields.io/badge/LLM-Groq%20Cloud%20(Llama%203.3)-F55036?style=for-the-badge&logo=groq)](https://groq.com)
 [![Frontend](https://img.shields.io/badge/Frontend-Nuxt%203%20%7C%20Vue%203-00DC82?style=for-the-badge&logo=nuxtdotjs)](https://nuxt.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-24%2F7%20Active%20%26%20Production%20Ready-brightgreen?style=for-the-badge)](#)
 
 ---
@@ -33,6 +34,7 @@ DuoSigna is fully deployed and available 24/7 on the cloud:
 8. [Local Development Setup (Optional)](#local-development-setup-optional)
 9. [API Overview](#api-overview)
 10. [Authors & Academic Context](#authors--academic-context)
+11. [License](#license)
 
 ---
 
@@ -318,6 +320,12 @@ DuoSigna originally started as a collaborative academic project for the **Multim
 * [Niccolò Sobrero](https://github.com/NiccoloSobrero)
 
 *Special thanks to the teaching staff and course instructors at Politecnico di Milano for their guidance during the initial conception.*
+
+---
+
+## License
+
+This project is licensed under the terms of the **MIT License**. See the [LICENSE](LICENSE) file for the full license text.
 
 ---
 
