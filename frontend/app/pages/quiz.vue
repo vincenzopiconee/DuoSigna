@@ -87,7 +87,7 @@ const signFrames = ref([])
 const MIN_FRAMES = 15
 
 // Allineamento del campionamento frame per non distorcere l'inferenza temporale di TF
-const maxFrames = computed(() => currentQuestion.value?.level === 'level_1' ? 150 : 384)
+const maxFrames = computed(() => currentQuestion.value?.level === 'level_1' ? 60 : 120)
 
 let holistic = null
 let camera = null
@@ -118,11 +118,12 @@ const onResults = (results) => {
 
   if (appState.value === 'BUFFERING') {
     if (signFrames.value.length < maxFrames.value) {
+      const r = (val) => (val === undefined || val === null ? null : Math.round(val * 10000) / 10000)
       const frameData = Array(543).fill([null, null, null])
-      if (results.faceLandmarks) results.faceLandmarks.forEach((lm, i) => frameData[i] = [lm.x, lm.y, lm.z])
-      if (results.leftHandLandmarks) results.leftHandLandmarks.forEach((lm, i) => frameData[468 + i] = [lm.x, lm.y, lm.z])
-      if (results.poseLandmarks) results.poseLandmarks.forEach((lm, i) => frameData[489 + i] = [lm.x, lm.y, lm.z])
-      if (results.rightHandLandmarks) results.rightHandLandmarks.forEach((lm, i) => frameData[522 + i] = [lm.x, lm.y, lm.z])
+      if (results.faceLandmarks) results.faceLandmarks.forEach((lm, i) => frameData[i] = [r(lm.x), r(lm.y), r(lm.z)])
+      if (results.leftHandLandmarks) results.leftHandLandmarks.forEach((lm, i) => frameData[468 + i] = [r(lm.x), r(lm.y), r(lm.z)])
+      if (results.poseLandmarks) results.poseLandmarks.forEach((lm, i) => frameData[489 + i] = [r(lm.x), r(lm.y), r(lm.z)])
+      if (results.rightHandLandmarks) results.rightHandLandmarks.forEach((lm, i) => frameData[522 + i] = [r(lm.x), r(lm.y), r(lm.z)])
       signFrames.value.push(frameData)
     }
     if (signFrames.value.length === maxFrames.value && !isPredicting.value) {
@@ -150,7 +151,7 @@ const activateCamera = async () => {
         locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`
       })
       holistic.setOptions({
-        modelComplexity: 1, smoothLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5
+        modelComplexity: 0, smoothLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5
       })
       holistic.onResults(onResults)
 
@@ -164,7 +165,7 @@ const activateCamera = async () => {
             await holistic.send({ image: videoElement.value })
           }
         },
-        width: 1280, height: 720
+        width: 640, height: 480
       })
       camera.start()
       window.addEventListener('keydown', handleKeyboard)

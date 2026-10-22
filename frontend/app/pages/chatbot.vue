@@ -248,7 +248,7 @@ const currentLevel = computed(() => activeLearningMessage.value?.level || 'level
 const currentInstructions = computed(() => activeLearningMessage.value?.content || 'Nessuna istruzione trovata.')
 const currentMedia = computed(() => activeLearningMessage.value?.video_link_or_gif || null)
 
-const maxFrames = computed(() => currentLevel.value === 'level_1' ? 150 : 384)
+const maxFrames = computed(() => currentLevel.value === 'level_1' ? 60 : 120)
 
 let holistic = null
 let camera = null
@@ -288,12 +288,13 @@ const onResults = (results) => {
 
   if (appState.value === 'BUFFERING') {
     if (signFrames.value.length < maxFrames.value) {
+      const r = (val) => (val === undefined || val === null ? null : Math.round(val * 10000) / 10000)
       const frameData = Array(543).fill([null, null, null])
 
-      if (results.faceLandmarks) results.faceLandmarks.forEach((lm, i) => frameData[i] = [lm.x, lm.y, lm.z])
-      if (results.leftHandLandmarks) results.leftHandLandmarks.forEach((lm, i) => frameData[468 + i] = [lm.x, lm.y, lm.z])
-      if (results.poseLandmarks) results.poseLandmarks.forEach((lm, i) => frameData[489 + i] = [lm.x, lm.y, lm.z])
-      if (results.rightHandLandmarks) results.rightHandLandmarks.forEach((lm, i) => frameData[522 + i] = [lm.x, lm.y, lm.z])
+      if (results.faceLandmarks) results.faceLandmarks.forEach((lm, i) => frameData[i] = [r(lm.x), r(lm.y), r(lm.z)])
+      if (results.leftHandLandmarks) results.leftHandLandmarks.forEach((lm, i) => frameData[468 + i] = [r(lm.x), r(lm.y), r(lm.z)])
+      if (results.poseLandmarks) results.poseLandmarks.forEach((lm, i) => frameData[489 + i] = [r(lm.x), r(lm.y), r(lm.z)])
+      if (results.rightHandLandmarks) results.rightHandLandmarks.forEach((lm, i) => frameData[522 + i] = [r(lm.x), r(lm.y), r(lm.z)])
 
       signFrames.value.push(frameData)
     }
@@ -348,7 +349,7 @@ const activateCamera = async () => {
       })
 
       holistic.setOptions({
-        modelComplexity: 1,
+        modelComplexity: 0,
         smoothLandmarks: true,
         enableSegmentation: false,
         refineFaceLandmarks: false,
@@ -368,8 +369,8 @@ const activateCamera = async () => {
             await holistic.send({ image: videoElement.value })
           }
         },
-        width: 1280,
-        height: 720
+        width: 640,
+        height: 480
       })
 
       camera.start()
