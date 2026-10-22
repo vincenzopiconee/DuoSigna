@@ -263,3 +263,10 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/nuxtjs,python,windows,macos,visualstudiocode
+
+# Environment variables and sensitive credentials
+.env
+.env.*
+*.env
+!.env.example
+

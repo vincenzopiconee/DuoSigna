@@ -1,3 +1,4 @@
+import os
 import jwt
 from datetime import datetime, timedelta, timezone
 from passlib.context import CryptContext
@@ -11,8 +12,8 @@ pwd_context = CryptContext(
     bcrypt__ident="2b" 
 )
 
-# Chiave segreta per "firmare" i token (In un progetto reale andrebbe nel file .env!)
-SECRET_KEY = "super_segreto_mita_2026"
+# Chiave segreta per "firmare" i token
+SECRET_KEY = os.getenv("JWT_SECRET", "super_segreto_mita_2026")
 ALGORITHM = "HS256"
 
 # Funzione per criptare la password
