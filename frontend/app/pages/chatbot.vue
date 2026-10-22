@@ -508,6 +508,9 @@ const currentAudio = ref(null)
 const isAudioLoading = ref(false)
 
 const stopAudio = () => {
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    window.speechSynthesis.cancel()
+  }
   if (currentAudio.value) {
     currentAudio.value.pause()
     currentAudio.value.currentTime = 0 // Riporta all'inizio
@@ -527,11 +530,57 @@ const toggleAudio = async (text, index) => {
     return
   }
 
-  // Se stava suonando un ALTRO messaggio, lo fermo prima di far partire il nuovo
-  if (currentAudio.value) {
-    stopAudio()
+  // Ferma qualsiasi riproduzione precedente
+  stopAudio()
+
+  // 1. Priorità: Web Speech API del browser (Istantaneo, 0s di latenza, zero carico sul server)
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    try {
+      window.speechSynthesis.cancel()
+
+      // Pulisce il testo da markdown, asterischi o link per una pronuncia fluida
+      const cleanText = text
+        .replace(/https?:\/\/\S+/g, '')
+        .replace(/[*_#`~>\[\]]/g, '')
+        .replace(/\n+/g, '. ')
+        .trim()
+
+      if (!cleanText) return
+
+      const utterance = new SpeechSynthesisUtterance(cleanText)
+      utterance.lang = 'en-US'
+      utterance.rate = 1.0
+
+      // Seleziona la voce naturale più adatta
+      const voices = window.speechSynthesis.getVoices()
+      const englishVoices = voices.filter(v => v.lang.startsWith('en'))
+      const preferred = englishVoices.find(v => 
+        v.name.includes('Natural') || 
+        v.name.includes('Google') || 
+        v.name.includes('Siri') || 
+        v.name.includes('Samantha')
+      ) || englishVoices[0]
+
+      if (preferred) utterance.voice = preferred
+
+      isPlayingAudioFor.value = index
+      isAudioLoading.value = false
+
+      utterance.onend = () => {
+        if (isPlayingAudioFor.value === index) stopAudio()
+      }
+      utterance.onerror = () => {
+        if (isPlayingAudioFor.value === index) stopAudio()
+      }
+
+      window.speechSynthesis.speak(utterance)
+      return
+    } catch (e) {
+      console.warn("Browser speech synthesis fallback to server:", e)
+    }
   }
 
+  // 2. Fallback al backend se il browser non supporta la sintesi vocale
   isPlayingAudioFor.value = index
   isAudioLoading.value = true
 
